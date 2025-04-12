@@ -57,6 +57,7 @@ export default function Home() {
   }
 
   const filteredPlayers = getFilteredPlayers();
+  const showStats = filteredPlayers.length > 0;
 
   return (
     <DashboardLayout>
@@ -71,32 +72,38 @@ export default function Home() {
           onComparePlayersChange={setComparedPlayers}
         />
 
-        {/* Top Players Leaderboard - Only show in 'all' mode */}
-        {viewMode === 'all' && (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Player Leaderboard</h2>
-            <PlayerLeaderboard players={players} />
+        {showStats ? (
+          <>
+            {/* Player Stats Tables */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h2 className="text-xl font-bold mb-6">Player Statistics</h2>
+              <PlayerLeaderboard players={filteredPlayers} />
+            </div>
+
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                <h2 className="text-xl font-bold mb-4">Points Per Game</h2>
+                <PointsDistribution players={filteredPlayers} />
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                <h2 className="text-xl font-bold mb-4">Shooting Efficiency</h2>
+                <ShootingEfficiency players={filteredPlayers} />
+              </div>
+            </div>
+
+            {/* Performance Radar */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h2 className="text-xl font-bold mb-4">Performance Radar</h2>
+              <PerformanceRadar players={filteredPlayers} />
+            </div>
+          </>
+        ) : (
+          <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+            Please select a player to view their statistics.
           </div>
         )}
-
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Points Per Game</h2>
-            <PointsDistribution players={filteredPlayers} />
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Shooting Efficiency</h2>
-            <ShootingEfficiency players={filteredPlayers} />
-          </div>
-        </div>
-
-        {/* Performance Radar - Show for all filtered players in one chart */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4">Performance Radar</h2>
-          <PerformanceRadar players={filteredPlayers} />
-        </div>
       </div>
     </DashboardLayout>
   );
