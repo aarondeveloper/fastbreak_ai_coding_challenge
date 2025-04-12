@@ -25,11 +25,14 @@ interface SeasonRecord {
   losses: number;
 }
 
+type FilterType = 'all' | 'won' | 'lost';
+
 export default function GamesPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [record, setRecord] = useState<SeasonRecord>({ wins: 0, losses: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterType>('all');
 
   useEffect(() => {
     async function fetchGames() {
@@ -62,6 +65,17 @@ export default function GamesPage() {
 
     fetchGames();
   }, []);
+
+  const filteredGames = games.filter(game => {
+    switch (filter) {
+      case 'won':
+        return game.hornetsWon;
+      case 'lost':
+        return !game.hornetsWon;
+      default:
+        return true;
+    }
+  });
 
   if (loading) {
     return (
@@ -114,9 +128,43 @@ export default function GamesPage() {
           </div>
         </div>
 
+        {/* Filter Controls */}
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2 rounded-md font-medium ${
+              filter === 'all'
+                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            All Games
+          </button>
+          <button
+            onClick={() => setFilter('won')}
+            className={`px-4 py-2 rounded-md font-medium ${
+              filter === 'won'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            Wins ({record.wins})
+          </button>
+          <button
+            onClick={() => setFilter('lost')}
+            className={`px-4 py-2 rounded-md font-medium ${
+              filter === 'lost'
+                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            Losses ({record.losses})
+          </button>
+        </div>
+
         {/* Games Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {games.map(game => (
+          {filteredGames.map(game => (
             <div key={game.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
               <div className="p-4">
                 <div className="flex justify-between items-center mb-2">
