@@ -26,6 +26,7 @@ export default function DashboardLayout({
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Welcome to FastBreak Player Insights</h1>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
             href="/api/auth/login"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
