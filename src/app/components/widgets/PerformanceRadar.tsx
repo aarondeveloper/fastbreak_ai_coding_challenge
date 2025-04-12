@@ -1,4 +1,4 @@
-import { Player } from '../../types/player';
+import { Player } from '@/app/types/player';
 import {
   RadarChart,
   PolarGrid,
@@ -7,6 +7,7 @@ import {
   Radar,
   Legend,
   ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 
 interface PerformanceRadarProps {
@@ -20,17 +21,26 @@ const PerformanceRadar: React.FC<PerformanceRadarProps> = ({ players }) => {
     'points_per_game',
     'rebounds_per_game',
     'assists_per_game',
-    'steals_per_game',
-    'blocks_per_game',
-  ];
+    'field_goal_percentage',
+    'three_point_percentage',
+  ] as const;
 
-  const data = metrics.map((metric) => ({
-    metric: metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-    ...players.reduce((acc, player) => ({
-      ...acc,
-      [player.first_name + ' ' + player.last_name]: player[metric as keyof Player],
-    }), {}),
-  }));
+  type MetricKey = typeof metrics[number];
+
+  const data = metrics.map((metric) => {
+    const formattedMetric = metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const isPercentage = metric.includes('percentage');
+    
+    return {
+      metric: formattedMetric,
+      ...players.reduce((acc, player) => ({
+        ...acc,
+        [player.first_name + ' ' + player.last_name]: isPercentage 
+          ? player.stats[metric as keyof Player['stats']] * 100 
+          : player.stats[metric as keyof Player['stats']],
+      }), {}),
+    };
+  });
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -38,6 +48,12 @@ const PerformanceRadar: React.FC<PerformanceRadarProps> = ({ players }) => {
         <PolarGrid />
         <PolarAngleAxis dataKey="metric" />
         <PolarRadiusAxis />
+        <Tooltip 
+          formatter={(value: number) => {
+            const isPercentage = typeof value === 'number' && value <= 100 && value >= 0;
+            return isPercentage ? `${value.toFixed(1)}%` : value.toFixed(1);
+          }}
+        />
         {players.map((player, index) => (
           <Radar
             key={player.id}
