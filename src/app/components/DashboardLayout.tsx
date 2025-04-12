@@ -25,7 +25,7 @@ export default function DashboardLayout({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Welcome to FastBreak Player Insights</h1>
+          <h1 className="text-2xl font-bold mb-4">Fastbreak AI Player Insights</h1>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
             href="/api/auth/login"
@@ -45,7 +45,7 @@ export default function DashboardLayout({
           <div className="flex justify-between h-16">
             <div className="flex items-center space-x-8">
               <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
-                FastBreak Player Insights
+                Fastbreak AI Player Insights
               </Link>
               <div className="flex space-x-4">
                 <Link 
