@@ -1,4 +1,5 @@
 import { Player } from '@/app/types/player';
+import { useState, useMemo, useEffect } from 'react';
 
 interface FilterControlsProps {
   players: Player[];
@@ -8,7 +9,10 @@ interface FilterControlsProps {
   onViewModeChange: (mode: 'all' | 'single' | 'compare') => void;
   comparedPlayers: Player[];
   onComparePlayersChange: (players: Player[]) => void;
+  onFilteredPlayersChange: (players: Player[]) => void;
 }
+
+const POSITIONS = ['All', 'PG', 'SG', 'SF', 'PF', 'C'] as const;
 
 export default function FilterControls({
   players,
@@ -18,7 +22,20 @@ export default function FilterControls({
   onViewModeChange,
   comparedPlayers,
   onComparePlayersChange,
+  onFilteredPlayersChange,
 }: FilterControlsProps) {
+  const [selectedPosition, setSelectedPosition] = useState<typeof POSITIONS[number]>('All');
+
+  const filteredPlayers = useMemo(() => {
+    if (selectedPosition === 'All') return players;
+    return players.filter(player => player.position === selectedPosition);
+  }, [players, selectedPosition]);
+
+  // Notify parent component when filtered players change
+  useEffect(() => {
+    onFilteredPlayersChange(filteredPlayers);
+  }, [filteredPlayers, onFilteredPlayersChange]);
+
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
@@ -61,6 +78,33 @@ export default function FilterControls({
           </div>
         </div>
 
+        {/* Position Filter */}
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Filter by Position
+          </label>
+          <div className="flex gap-2">
+            {POSITIONS.map((position) => (
+              <button
+                key={position}
+                onClick={() => {
+                  setSelectedPosition(position);
+                  // Clear selections when changing position
+                  if (viewMode === 'single') onPlayerSelect(null);
+                  if (viewMode === 'compare') onComparePlayersChange([]);
+                }}
+                className={`px-4 py-2 rounded ${
+                  selectedPosition === position
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                {position}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Player Selection */}
         {viewMode === 'single' && (
           <div className="flex-1">
@@ -70,14 +114,15 @@ export default function FilterControls({
             <select
               value={selectedPlayer?.id || ''}
               onChange={(e) => {
-                const player = players.find((p) => p.id === parseInt(e.target.value));
+                const player = filteredPlayers.find((p) => p.id === parseInt(e.target.value));
                 onPlayerSelect(player || null);
               }}
               className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              {players.map((player) => (
+              <option value="">Select a player</option>
+              {filteredPlayers.map((player) => (
                 <option key={player.id} value={player.id}>
-                  {player.first_name} {player.last_name}
+                  {player.first_name} {player.last_name} ({player.position})
                 </option>
               ))}
             </select>
@@ -96,16 +141,16 @@ export default function FilterControls({
               onChange={(e) => {
                 const selectedOptions = Array.from(e.target.selectedOptions);
                 const selectedPlayers = selectedOptions
-                  .map((option) => players.find((p) => p.id === parseInt(option.value)))
+                  .map((option) => filteredPlayers.find((p) => p.id === parseInt(option.value)))
                   .filter((p): p is Player => p !== undefined);
                 onComparePlayersChange(selectedPlayers);
               }}
               className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               size={4}
             >
-              {players.map((player) => (
+              {filteredPlayers.map((player) => (
                 <option key={player.id} value={player.id}>
-                  {player.first_name} {player.last_name}
+                  {player.first_name} {player.last_name} ({player.position})
                 </option>
               ))}
             </select>

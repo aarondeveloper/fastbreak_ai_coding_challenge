@@ -11,6 +11,7 @@ import FilterControls from '@/app/components/widgets/FilterControls';
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [filteredPlayers, setFilteredPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [viewMode, setViewMode] = useState<'all' | 'single' | 'compare'>('all');
   const [comparedPlayers, setComparedPlayers] = useState<Player[]>([]);
@@ -22,6 +23,7 @@ export default function Home() {
         const response = await fetch('/api/players');
         const data = await response.json();
         setPlayers(data);
+        setFilteredPlayers(data);
         if (data.length > 0) {
           setSelectedPlayer(data[0]);
         }
@@ -35,14 +37,14 @@ export default function Home() {
     fetchPlayers();
   }, []);
 
-  const getFilteredPlayers = () => {
+  const getDisplayedPlayers = () => {
     switch (viewMode) {
       case 'single':
         return selectedPlayer ? [selectedPlayer] : [];
       case 'compare':
         return comparedPlayers;
       default:
-        return players;
+        return filteredPlayers;
     }
   };
 
@@ -56,8 +58,8 @@ export default function Home() {
     );
   }
 
-  const filteredPlayers = getFilteredPlayers();
-  const showStats = filteredPlayers.length > 0;
+  const displayedPlayers = getDisplayedPlayers();
+  const showStats = displayedPlayers.length > 0;
 
   return (
     <DashboardLayout>
@@ -70,33 +72,31 @@ export default function Home() {
           onViewModeChange={setViewMode}
           comparedPlayers={comparedPlayers}
           onComparePlayersChange={setComparedPlayers}
+          onFilteredPlayersChange={setFilteredPlayers}
         />
 
         {showStats ? (
           <>
-            {/* Player Stats Tables */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
               <h2 className="text-xl font-bold mb-6">Player Statistics</h2>
-              <PlayerLeaderboard players={filteredPlayers} />
+              <PlayerLeaderboard players={displayedPlayers} />
             </div>
 
-            {/* Charts Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
                 <h2 className="text-xl font-bold mb-4">Points Per Game</h2>
-                <PointsDistribution players={filteredPlayers} />
+                <PointsDistribution players={displayedPlayers} />
               </div>
 
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
                 <h2 className="text-xl font-bold mb-4">Shooting Efficiency</h2>
-                <ShootingEfficiency players={filteredPlayers} />
+                <ShootingEfficiency players={displayedPlayers} />
               </div>
             </div>
 
-            {/* Performance Radar */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
               <h2 className="text-xl font-bold mb-4">Performance Radar</h2>
-              <PerformanceRadar players={filteredPlayers} />
+              <PerformanceRadar players={displayedPlayers} />
             </div>
           </>
         ) : (
