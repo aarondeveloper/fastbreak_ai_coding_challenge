@@ -1,15 +1,16 @@
 'use client';
 
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import Profile from './Profile';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
+  const { user, isLoading } = useUser();
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -17,17 +18,17 @@ export default function DashboardLayout({
     );
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Welcome to FastBreak Player Insights</h1>
-          <button
-            onClick={() => signIn()}
+          <a
+            href="/api/auth/login"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
             Login
-          </button>
+          </a>
         </div>
       </div>
     );
@@ -43,16 +44,14 @@ export default function DashboardLayout({
                 FastBreak Player Insights
               </h1>
             </div>
-            <div className="flex items-center">
-              <span className="text-gray-700 dark:text-gray-300 mr-4">
-                {session.user?.name}
-              </span>
-              <button
-                onClick={() => signOut()}
+            <div className="flex items-center space-x-4">
+              <Profile />
+              <a
+                href="/api/auth/logout"
                 className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
               >
                 Logout
-              </button>
+              </a>
             </div>
           </div>
         </div>
