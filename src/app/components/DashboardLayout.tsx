@@ -71,6 +71,7 @@ export default function DashboardLayout({
             </div>
             <div className="flex items-center space-x-4">
               <Profile />
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a
                 href="/api/auth/logout"
                 className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
