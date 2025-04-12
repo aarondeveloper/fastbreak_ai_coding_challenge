@@ -25,8 +25,6 @@ const PerformanceRadar: React.FC<PerformanceRadarProps> = ({ players }) => {
     'three_point_percentage',
   ] as const;
 
-  type MetricKey = typeof metrics[number];
-
   const data = metrics.map((metric) => {
     const formattedMetric = metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     const isPercentage = metric.includes('percentage');
@@ -57,8 +55,8 @@ const PerformanceRadar: React.FC<PerformanceRadarProps> = ({ players }) => {
         {players.map((player, index) => (
           <Radar
             key={player.id}
-            name={`${player.first_name} ${player.last_name}`}
-            dataKey={`${player.first_name} ${player.last_name}`}
+            name={player.first_name + ' ' + player.last_name}
+            dataKey={player.first_name + ' ' + player.last_name}
             stroke={COLORS[index % COLORS.length]}
             fill={COLORS[index % COLORS.length]}
             fillOpacity={0.6}
