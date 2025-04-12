@@ -100,7 +100,7 @@ export default function GamesPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Charlotte Hornets Games</h1>
-          <div className="text-gray-600 dark:text-gray-400">2023-24 Season</div>
+          <div className="text-gray-600 dark:text-gray-400">2024-25 Season</div>
         </div>
 
         {/* Season Record Card */}
