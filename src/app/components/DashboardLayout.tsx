@@ -1,6 +1,8 @@
 'use client';
 
 import { useUser } from '@auth0/nextjs-auth0/client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Profile from './Profile';
 
 export default function DashboardLayout({
@@ -9,6 +11,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, isLoading } = useUser();
+  const pathname = usePathname();
 
   if (isLoading) {
     return (
@@ -35,14 +38,36 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <nav className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="flex items-center space-x-8">
+              <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
                 FastBreak Player Insights
-              </h1>
+              </Link>
+              <div className="flex space-x-4">
+                <Link 
+                  href="/"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/' 
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  href="/games"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    pathname === '/games' 
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Games
+                </Link>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <Profile />
