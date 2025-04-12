@@ -5,10 +5,16 @@ interface PlayerLeaderboardProps {
 }
 
 export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
-  // Get top 5 players for each category
-  const getTopPlayers = (category: keyof Player['stats'], label: string, isPercentage: boolean = false) => {
+  const formatPlayerName = (firstName: string, lastName: string) => {
+    // If first name is longer than 2 characters, abbreviate it
+    const formattedFirstName = firstName.length > 2 
+      ? `${firstName.charAt(0)}.`
+      : firstName;
+    return `${formattedFirstName} ${lastName}`;
+  };
+
+  const getPlayerStats = (category: keyof Player['stats'], label: string, isPercentage: boolean = false) => {
     const sortedPlayers = [...players].sort((a, b) => b.stats[category] - a.stats[category]);
-    const top5 = sortedPlayers.slice(0, 5);
 
     return (
       <div className="mb-6">
@@ -22,13 +28,13 @@ export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
               </tr>
             </thead>
             <tbody>
-              {top5.map((player, index) => (
+              {sortedPlayers.map((player, index) => (
                 <tr 
                   key={player.id}
                   className={index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'}
                 >
-                  <td className="px-4 py-2">
-                    {player.first_name} {player.last_name}
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    {formatPlayerName(player.first_name, player.last_name)}
                   </td>
                   <td className="px-4 py-2 text-right">
                     {isPercentage 
@@ -46,11 +52,11 @@ export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {getTopPlayers('points_per_game', 'Points Per Game')}
-      {getTopPlayers('rebounds_per_game', 'Rebounds Per Game')}
-      {getTopPlayers('assists_per_game', 'Assists Per Game')}
-      {getTopPlayers('field_goal_percentage', 'Field Goal %', true)}
-      {getTopPlayers('minutes_per_game', 'Minutes Per Game')}
+      {getPlayerStats('points_per_game', 'Points Per Game')}
+      {getPlayerStats('rebounds_per_game', 'Rebounds Per Game')}
+      {getPlayerStats('assists_per_game', 'Assists Per Game')}
+      {getPlayerStats('field_goal_percentage', 'Field Goal %', true)}
+      {getPlayerStats('minutes_per_game', 'Minutes Per Game')}
     </div>
   );
 } 
