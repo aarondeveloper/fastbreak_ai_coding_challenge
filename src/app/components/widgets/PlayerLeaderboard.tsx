@@ -1,4 +1,4 @@
-import { Player } from '../../types/player';
+import { Player } from '@/app/types/player';
 
 interface PlayerLeaderboardProps {
   players: Player[];
@@ -6,7 +6,7 @@ interface PlayerLeaderboardProps {
 
 export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
   // Get top 5 players for each category
-  const getTopPlayers = (category: keyof Player['stats'], label: string) => {
+  const getTopPlayers = (category: keyof Player['stats'], label: string, isPercentage: boolean = false) => {
     const sortedPlayers = [...players].sort((a, b) => b.stats[category] - a.stats[category]);
     const top5 = sortedPlayers.slice(0, 5);
 
@@ -31,7 +31,9 @@ export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
                     {player.first_name} {player.last_name}
                   </td>
                   <td className="px-4 py-2 text-right">
-                    {player.stats[category].toFixed(1)}
+                    {isPercentage 
+                      ? `${(player.stats[category] * 100).toFixed(1)}%`
+                      : player.stats[category].toFixed(1)}
                   </td>
                 </tr>
               ))}
@@ -47,7 +49,7 @@ export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
       {getTopPlayers('points_per_game', 'Points Per Game')}
       {getTopPlayers('rebounds_per_game', 'Rebounds Per Game')}
       {getTopPlayers('assists_per_game', 'Assists Per Game')}
-      {getTopPlayers('field_goal_percentage', 'Field Goal %')}
+      {getTopPlayers('field_goal_percentage', 'Field Goal %', true)}
       {getTopPlayers('minutes_per_game', 'Minutes Per Game')}
     </div>
   );
