@@ -1,4 +1,4 @@
-import { Player } from '../../types/player';
+import { Player } from '@/app/types/player';
 import {
   BarChart,
   Bar,
@@ -17,9 +17,8 @@ interface ShootingEfficiencyProps {
 const ShootingEfficiency: React.FC<ShootingEfficiencyProps> = ({ players }) => {
   const data = players.map((player) => ({
     name: `${player.first_name} ${player.last_name}`,
-    'Field Goal %': player.field_goal_percentage,
-    '3PT %': player.three_point_percentage,
-    'Free Throw %': player.free_throw_percentage,
+    'Field Goal %': (player.stats.field_goal_percentage * 100).toFixed(1),
+    '3PT %': (player.stats.three_point_percentage * 100).toFixed(1),
   }));
 
   return (
@@ -28,11 +27,10 @@ const ShootingEfficiency: React.FC<ShootingEfficiencyProps> = ({ players }) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
         <YAxis domain={[0, 100]} />
-        <Tooltip />
+        <Tooltip formatter={(value) => `${value}%`} />
         <Legend />
         <Bar dataKey="Field Goal %" fill="#8884d8" />
         <Bar dataKey="3PT %" fill="#82ca9d" />
-        <Bar dataKey="Free Throw %" fill="#ffc658" />
       </BarChart>
     </ResponsiveContainer>
   );
